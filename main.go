@@ -2,6 +2,7 @@ package main
 
 import (
 	flag "flag"
+	"strings"
 	sync "sync"
 
 	config "github.com/chrusty/prometheus_webhook_snmptrapper/config"
@@ -20,14 +21,23 @@ var (
 
 func init() {
 	// Process the command-line parameters:
+	var loglevel string
 	flag.StringVar(&conf.SNMPTrapAddress, "snmptrapaddress", "127.0.0.1:162", "Address to send SNMP traps to")
 	flag.StringVar(&conf.SNMPCommunity, "snmpcommunity", "public", "SNMP community string")
 	flag.UintVar(&conf.SNMPRetries, "snmpretries", 1, "Number of times to retry sending SNMP traps")
 	flag.StringVar(&conf.WebhookAddress, "webhookaddress", "0.0.0.0:9099", "Address and port to listen for webhooks on")
+	flag.StringVar(&loglevel, "loglevel", "info", "Logging level [info, debug, error]")
 	flag.Parse()
 
 	// Set the log-level:
-	logrus.SetLevel(logrus.DebugLevel)
+	switch strings.ToLower(loglevel) {
+	case "error":
+		logrus.SetLevel(logrus.ErrorLevel)
+	case "debug":
+		logrus.SetLevel(logrus.DebugLevel)
+	default:
+		logrus.SetLevel(logrus.InfoLevel)
+	}
 }
 
 func main() {
