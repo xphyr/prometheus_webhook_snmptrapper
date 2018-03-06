@@ -67,7 +67,7 @@ prometheus.rules: |
        expr: sum(kubelet_running_pod_count) > 5
        labels:
           instance: "occluster.local cluster"
-          severity: "shit shit stuff is down"
+          severity: "s*** s*** stuff is down"
           location: "undefined"
           service: "ocp"
        annotations:
@@ -120,3 +120,22 @@ For SNMP Trapper to be production ready we need:
 ### Diagram:
 
 ![diagram](images/diagram.png)
+
+### Log output from Trapper and Debugger:
+
+Trapper:
+```
+time="2018-03-06T16:21:30Z" level=info msg="It's a trap!" logger=SNMP-trapper status=firing vars=[{"Oid": "1.3.6.1.6.3.1.1.4.1.0", "Variable": {"Type": "Oid", "Value": "1.3.6.1.3.1977.1.0.1"}}, {"Oid": "1.3.6.1.3.1977.1.1.7", "Variable": {"Type": "OctetString", "Value": "2018-03-06T16:21:00Z"}}, {"Oid": "1.3.6.1.3.1977.1.1.5", "Variable": {"Type": "OctetString", "Value": "OMG OMG we are running out of resources"}}, {"Oid": "1.3.6.1.3.1977.1.1.1", "Variable": {"Type": "OctetString", "Value": "occluster.local cluster"}}, {"Oid": "1.3.6.1.3.1977.1.1.4", "Variable": {"Type": "OctetString", "Value": "s*** s*** stuff is down"}}, {"Oid": "1.3.6.1.3.1977.1.1.3", "Variable": {"Type": "OctetString", "Value": "undefined"}}, {"Oid": "1.3.6.1.3.1977.1.1.2", "Variable": {"Type": "OctetString", "Value": "ocp"}}, {"Oid": "1.3.6.1.3.1977.1.1.6", "Variable": {"Type": "OctetString", "Value": ""}}] 
+```
+
+Debugger:
+```
+time="2018-03-06T16:59:30Z" level=info msg="Trap variable" OID=".1.3.6.1.3.1977.1.1.6" value= 
+time="2018-03-06T16:59:30Z" level=info msg="Trap variable" OID=.1.3.6.1.6.3.1.1.4.1.0 value=.1.3.6.1.3.1977.1.0.1 
+time="2018-03-06T16:59:30Z" level=info msg="Trap variable" OID=".1.3.6.1.3.1977.1.1.1" value="occluster.local cluster" 
+time="2018-03-06T16:59:30Z" level=info msg="Trap variable" OID=".1.3.6.1.3.1977.1.1.2" value=ocp 
+time="2018-03-06T16:59:30Z" level=info msg="Trap variable" OID=".1.3.6.1.3.1977.1.1.3" value=undefined 
+time="2018-03-06T16:59:30Z" level=info msg="Trap variable" OID=".1.3.6.1.3.1977.1.1.7" value="2018-03-06T16:59:00Z" 
+time="2018-03-06T16:59:30Z" level=info msg="Trap variable" OID=".1.3.6.1.3.1977.1.1.5" value="OMG OMG we are running out of resources" 
+time="2018-03-06T16:59:30Z" level=info msg="Trap variable" OID=".1.3.6.1.3.1977.1.1.4" value="s*** s*** stuff is down" 
+```
