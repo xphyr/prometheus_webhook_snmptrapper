@@ -82,3 +82,41 @@ Test debugger using NC:
 ```
 echo -n "hello" | nc -4u  172.30.58.113 8162
 ```
+
+### AlertManager configuration example:
+```
+  alertmanager.yml: |                               
+    global:                                         
+
+    # The root route on which each incoming alert enters.                                                
+    route:                                          
+      # default route if none match                 
+      receiver: snmp-trapper                   
+
+      # The labels by which incoming alerts are grouped together. For example,                           
+      # multiple alerts coming in for cluster=A and alertname=LatencyHigh would                          
+      # be batched into a single group.             
+      # TODO:                                       
+      group_by: []                                  
+
+      # All the above attributes are inherited by all child routes and can                               
+      # overwritten on each.                        
+
+    receivers:                                      
+    - name: snmp-trapper                            
+      webhook_configs:                              
+      - url: http://snmp-trapper:9099 
+```
+
+### ToDo:
+
+For SNMP Trapper to be production ready we need:
+
+  1. Introduce some kinf of HA (mesh library potentially so we would not need to deal with quorum/raft)
+  2. Add workqueue with rate limiting to the trapper
+  3. Abstract snmptrap library via interface.
+
+
+### Diagram:
+
+![diagram](images/diagram.png)
