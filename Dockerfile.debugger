@@ -1,0 +1,10 @@
+FROM centos/tools
+USER root
+
+ENV LISTEN_PORT=8162
+
+EXPOSE 8162/udp
+
+COPY bin/linux/snmp-trapper-debugger /usr/local/bin/trapdebug
+
+CMD exec /usr/local/bin/trapdebug -listenport=$LISTEN_PORT

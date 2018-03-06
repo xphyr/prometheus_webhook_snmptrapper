@@ -22,6 +22,8 @@ spec:
         ports:
         - containerPort: 9099
           protocol: TCP
+        - containerPort: 8086
+          protocol: TCP
         args:
           # Uncomment the following line to manually specify Kubernetes API server Host
           # If not specified, Dashboard will attempt to auto discover the API server and connect
@@ -29,21 +31,27 @@ spec:
           # - --apiserver-host=http://my-address:port
         livenessProbe:
           httpGet:
-            path: /
-            port: 9099
-          initialDelaySeconds: 30
-          timeoutSeconds: 30
-          env:
-          - name: SNMP_COMMUNITY
-            value: "public"
-          - name: SNMP_RETRIES
-            value: "1"
-          - name: SNMP_TRAP_ADDRESS
-            value: "localhost:162"
-          - name: WEBHOOK_ADDRESS
-            value: "0.0.0.0:9099"
-          - name: LOGLEVEL
-            value: info
+            path: /live
+            port: 8086
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8086
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        env:
+        - name: SNMP_COMMUNITY
+          value: "public"
+        - name: SNMP_RETRIES
+          value: "1"
+        - name: SNMP_TRAP_ADDRESS
+          value: "snmp-trapper-debugger:8162"
+        - name: WEBHOOK_ADDRESS
+          value: "0.0.0.0:9099"
+        - name: LOGLEVEL
+          value: info
 ---
 kind: Service
 apiVersion: v1
@@ -53,7 +61,11 @@ metadata:
   name: snmp-trapper
 spec:
   ports:
-  - port: 9099
+  - name: app
+    port: 9099
     targetPort: 9099
+  - name: health
+    port: 8086
+    targetPort: 8086
   selector:
     k8s-app: snmp-trapper

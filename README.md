@@ -47,3 +47,38 @@ Command-line flags
 - **-snmpretries**: The number of times to retry sending traps (_default_ = `1`)
 - **-snmptrapaddress**: The address to send traps to (_default_ = `127.0.0.1:162`)
 - **-webhookaddress**: The address to listen for incoming webhooks on (_default_ = `0.0.0.0:9099`)
+
+### Kubernetes examples:
+
+```
+kubectl create -f deploymentes/kubernetes.yaml
+kubectl create -f deploymentes/kubernetes-debugger.yaml
+```
+
+
+### Prometheus alert example:
+```
+prometheus.rules: |
+   groups:
+   - name: example-rules
+     interval: 30s # defaults to global interval
+     rules:
+     - alert: "Too Many Pods"
+       expr: sum(kubelet_running_pod_count) > 5
+       labels:
+          instance: "occluster.local cluster"
+          severity: "shit shit stuff is down"
+          location: "undefined"
+          service: "ocp"
+       annotations:
+         description: "OMG OMG we are running out of resources"
+         miqTarget: "ExtManagementSystem"
+         severity: "ERROR"
+         url: "https://www.example.com/too_many_pods_fixing_instructions"
+         message: "Too many running pods"
+```
+
+Test debugger using NC:
+```
+echo -n "hello" | nc -4u  172.30.58.113 8162
+```

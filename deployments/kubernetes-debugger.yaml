@@ -1,0 +1,47 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  labels:
+    k8s-app: snmp-trapper-debugger
+  name: snmp-trapper-debugger
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: snmp-trapper-debugger
+  template:
+    metadata:
+      labels:
+        k8s-app: snmp-trapper-debugger
+    spec:
+      containers:
+      - name: snmp-trapper-debugger
+        imagePullPolicy: Always
+        image: docker.io/mangirdas/snmp-trapper-debugger:latest
+        ports:
+        - containerPort: 8162
+          protocol: UDP
+        args:
+          # Uncomment the following line to manually specify Kubernetes API server Host
+          # If not specified, Dashboard will attempt to auto discover the API server and connect
+          # to it. Uncomment only if the default does not work.
+          # - --apiserver-host=http://my-address:port
+        env:
+          - name: LISTEN_PORT
+            value: "8162"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    k8s-app: snmp-trapper-debugger
+  name: snmp-trapper-debugger
+spec:
+  ports:
+  - name: app
+    port: 8162
+    targetPort: 8162
+    protocol: UDP
+  selector:
+    k8s-app: snmp-trapper-debugger

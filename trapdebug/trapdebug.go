@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	listenPort = flag.Int("listenport", 162, "Port to listen for traps on")
+	listenPort = flag.Int("listenport", 8162, "Port to listen for traps on")
 )
 
 func init() {
@@ -23,11 +23,11 @@ func init() {
 
 func main() {
 
-	logrus.WithFields(logrus.Fields{"port": *listenPort}).Info("Starting SNMP TrapDebugger")
-
+	ip := net.IPv4(0, 0, 0, 0)
+	logrus.WithFields(logrus.Fields{"port": *listenPort, "ip": ip.String()}).Info("Starting SNMP TrapDebugger")
 	// Open a UDP socket:
 	socket, err := net.ListenUDP("udp4", &net.UDPAddr{
-		IP:   net.IPv4(0, 0, 0, 0),
+		IP:   ip,
 		Port: *listenPort,
 	})
 	if err != nil {

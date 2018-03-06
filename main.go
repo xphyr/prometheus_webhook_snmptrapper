@@ -2,13 +2,16 @@ package main
 
 import (
 	flag "flag"
+	"net/http"
 	"strings"
 	sync "sync"
+	"time"
 
 	config "github.com/chrusty/prometheus_webhook_snmptrapper/config"
 	snmptrapper "github.com/chrusty/prometheus_webhook_snmptrapper/snmptrapper"
 	types "github.com/chrusty/prometheus_webhook_snmptrapper/types"
 	webhook "github.com/chrusty/prometheus_webhook_snmptrapper/webhook"
+	"github.com/heptiolabs/healthcheck"
 
 	logrus "github.com/Sirupsen/logrus"
 )
@@ -17,12 +20,13 @@ var (
 	conf      config.Config
 	log       = logrus.WithFields(logrus.Fields{"logger": "main"})
 	waitGroup = &sync.WaitGroup{}
+	health    = healthcheck.NewHandler()
 )
 
 func init() {
 	// Process the command-line parameters:
 	var loglevel string
-	flag.StringVar(&conf.SNMPTrapAddress, "snmptrapaddress", "127.0.0.1:162", "Address to send SNMP traps to")
+	flag.StringVar(&conf.SNMPTrapAddress, "snmptrapaddress", "0.0.0.0:8162", "Address to send SNMP traps to")
 	flag.StringVar(&conf.SNMPCommunity, "snmpcommunity", "public", "SNMP community string")
 	flag.UintVar(&conf.SNMPRetries, "snmpretries", 1, "Number of times to retry sending SNMP traps")
 	flag.StringVar(&conf.WebhookAddress, "webhookaddress", "0.0.0.0:9099", "Address and port to listen for webhooks on")
@@ -38,6 +42,14 @@ func init() {
 	default:
 		logrus.SetLevel(logrus.InfoLevel)
 	}
+
+	health.AddReadinessCheck(
+		"upstream-prometheus",
+		healthcheck.DNSResolveCheck("prometheus", 50*time.Millisecond))
+	log.Info("Preparing health check for prometheus upstream")
+
+	go http.ListenAndServe("0.0.0.0:8086", health)
+
 }
 
 func main() {

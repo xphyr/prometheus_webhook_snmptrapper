@@ -57,6 +57,6 @@ func sendTrap(alert types.Alert) {
 		log.WithFields(logrus.Fields{"error": err}).Error("Failed to send SNMP trap")
 		return
 	} else {
-		log.WithFields(logrus.Fields{"status": alert.Status}).Info("It's a trap!")
+		log.WithFields(logrus.Fields{"status": alert.Status, "vars": varBinds}).Info("It's a trap!")
 	}
 }
