@@ -121,6 +121,14 @@ For SNMP Trapper to be production ready we need:
 
 ![diagram](images/diagram.png)
 
+### Deploy using ansible
+
+You can deploy trapper using ansible playbooks. Just FIY, this is very RAW playbook just for testing.
+
+```
+ansible-playbook -i hosts-atomic-3.7 ansible/site.yml -e trapper_deploy_debugger=true
+```
+
 ### Log output from Trapper and Debugger:
 
 Trapper:
