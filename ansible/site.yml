@@ -1,0 +1,6 @@
+---
+# file: webservers.yml
+- hosts: masters
+  run_once: true
+  roles:
+    - deploy

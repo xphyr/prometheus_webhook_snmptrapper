@@ -1,0 +1,17 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    k8s-app: snmp-trapper
+  name: snmp-trapper
+spec:
+  ports:
+  - name: app
+    port: {{ trapper_webhooks_port }}
+    targetPort: {{ trapper_webhooks_port }}
+  - name: health
+    port: 8086
+    targetPort: 8086
+  selector:
+    k8s-app: snmp-trapper

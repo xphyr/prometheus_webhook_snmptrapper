@@ -1,0 +1,54 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  labels:
+    k8s-app: snmp-trapper
+  name: snmp-trapper
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: snmp-trapper
+  template:
+    metadata:
+      labels:
+        k8s-app: snmp-trapper
+    spec:
+      containers:
+      - name: snmp-trapper
+        imagePullPolicy: Always
+        image: {{ trapper_image }}
+        ports:
+        - containerPort: "{{ trapper_webhooks_port }}"
+          protocol: TCP
+        - containerPort: 8086
+          protocol: TCP
+        args:
+          # Uncomment the following line to manually specify Kubernetes API server Host
+          # If not specified, Dashboard will attempt to auto discover the API server and connect
+          # to it. Uncomment only if the default does not work.
+          # - --apiserver-host=http://my-address:port
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: 8086
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8086
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        env:
+        - name: SNMP_COMMUNITY
+          value: "{{ trapper_snmp_community }}"
+        - name: SNMP_RETRIES
+          value: "{{ trapper_snmp_retries }}"
+        - name: SNMP_TRAP_ADDRESS
+          value: "{{ trapper_snmp_address }}:{{ trapper_debugger_port }}"
+        - name: WEBHOOK_ADDRESS
+          value: "{{ trapper_webhook_address }}:{{ trapper_webhooks_port }}"
+        - name: LOGLEVEL
+          value: "{{ trapper_loglevel }}"

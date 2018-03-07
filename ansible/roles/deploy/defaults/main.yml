@@ -1,0 +1,18 @@
+---
+# defaults file for deploy
+trapper_deployments_files:
+  - trapper-debugger-deployment.yaml
+  - trapper-debugger-svc.yaml
+  - trapper-deployment.yaml
+  - trapper-svc.yaml
+trapper_namespace: openshift-metrics
+trapper_image: docker.io/mangirdas/snmp-trapper:latest
+trapper_webhooks_port: 9099
+trapper_snmp_community: public
+trapper_snmp_retries: 1
+trapper_snmp_address: snmp-trapper-debugger
+trapper_webhook_address: 0.0.0.0
+trapper_loglevel: info
+
+trapper_debugger_port: 8162
+trapper_deploy_debugger: false
